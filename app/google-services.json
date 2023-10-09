@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "643695337755",
+    "firebase_url": "https://tik-tak-toe-7f9c3-default-rtdb.firebaseio.com",
+    "project_id": "tik-tak-toe-7f9c3",
+    "storage_bucket": "tik-tak-toe-7f9c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643695337755:android:9ccd9535f7e83adef333be",
+        "android_client_info": {
+          "package_name": "com.example.tiktaktoe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643695337755-3qhdmgmgogrlk0smnt24avb8v6pb5ji5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tiktaktoe",
+            "certificate_hash": "2fb3ac71fbe5f4d4bdc0f877f40c921a2f7b6cc5"
+          }
+        },
+        {
+          "client_id": "643695337755-o7hgko0dars6goiqgelvo6qhilmcvf0p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfWXKdlCS7HrmqP53HVk30nCAqwbou038"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643695337755-o7hgko0dars6goiqgelvo6qhilmcvf0p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

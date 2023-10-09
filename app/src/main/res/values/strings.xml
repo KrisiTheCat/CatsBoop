@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Tik Tac Toe</string>
+
+    <string name="single_player">Single Player</string>
+    <string name="online">Online</string>
+    <string name="about">About</string>
+    <string name="exit">Exit</string>
+    <string name="back">Back</string>
+
+    <string name="about_note">
+        This game is made by Kristina Stoyanova
+        \nHave fun playing!</string>
+</resources>
