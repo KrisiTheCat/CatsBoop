@@ -7,7 +7,7 @@
     android:background="@drawable/woods"
     android:orientation="vertical"
     android:layout_gravity="center_vertical|center_horizontal"
-    tools:context=".GameActivity">
+    tools:context=".OnlineGameActivity">
 
     <TableLayout
         android:id="@+id/tableLayout"
@@ -29,6 +29,7 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick" />
 
             <ImageView
@@ -36,14 +37,16 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
             <ImageView
                 android:id="@+id/iv_13"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
         </TableRow>
 
@@ -57,21 +60,24 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
             <ImageView
                 android:id="@+id/iv_22"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
             <ImageView
                 android:id="@+id/iv_23"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
         </TableRow>
 
@@ -85,21 +91,24 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
             <ImageView
                 android:id="@+id/iv_32"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
             <ImageView
                 android:id="@+id/iv_33"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:contentDescription="@string/no" />
 
         </TableRow>
 
@@ -109,12 +118,12 @@
         android:id="@+id/tvPlayer1"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:textAlignment="center"
         android:text="Player 1"
         android:textColor="#FFFFFF"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tableLayout"
-        app:layout_constraintHorizontal_bias="0.383"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -122,11 +131,22 @@
         android:id="@+id/tvPlayer2"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="Player 2"
-        android:textColor="#FFFFFF"
         android:textAlignment="center"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tableLayout"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTurn"
+        android:layout_width="97dp"
+        android:layout_height="49dp"
+        android:text="TextView"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,68 +7,65 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class OnlineGameActivity extends AppCompatActivity {
 
-    TextView tvPlayer1, tvPlayer2;
+    String gameId = "";
+    GameInfo gameInfo;
 
-    String winnerString = "";
-
-    String playerSession = "";
-    String userName = "";
-    String otherPlayer = "";
-    String loginUID = "";
-    String requestType = "";
-    String myGameSign = "X";
-
-    int gameState = 0;
-    FirebaseDatabase database = FirebaseDatabase.getInstance("https://tik-tak-toe-7f9c3-default-rtdb.firebaseio.com/");
-    DatabaseReference myRef = database.getReference();
-
-    int activePlayer = 1;
-    ArrayList<Integer> Player1 = new ArrayList<Integer>();
-    ArrayList<Integer> Player2 = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_game);
 
-        userName = getIntent().getExtras().get("user_name").toString();
-        loginUID = getIntent().getExtras().get("login_uid").toString();
-        otherPlayer = getIntent().getExtras().get("other_player").toString();
-        requestType = getIntent().getExtras().get("request_type").toString();
-        playerSession = getIntent().getExtras().get("player_session").toString();
+        gameId = getIntent().getExtras().get("game_id").toString();
+        gameInfo = new GameInfo();
+        MyInterfaceDataSnapshot UpdateGame = new MyInterfaceDataSnapshot() {
+            @Override
+            public void apply(DataSnapshot dataSnapshot) {
+                if (gameInfo.getGameState() == GameStates.INIT) {
+                    gameInfo = dataSnapshot.getValue(GameInfo.class);
+                    Log.d("krisi", gameInfo.toString());
+                    initBoard();
 
-        tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
-        tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
+                } else {
+                    if (dataSnapshot.child("pawns") != gameInfo.getPawns()) {
+                        Log.d("krisi", "Diff");
+                    } else {
+                        Log.d("krisi", "same");
+                    }
+                    gameInfo = (GameInfo) dataSnapshot.getValue();
+                    refreshBoard();
+                }
+            }
+        };
+        DataBaseOp.gameUpdates(gameId, UpdateGame);
 
-        gameState = 1;
+    }
 
-        if(requestType.equals("From")){
-            myGameSign = "O";
-            tvPlayer1.setText("Your turn");
-            tvPlayer2.setText("Your turn");
-            myRef.child("playing").child(playerSession).child("turn").setValue(userName);
-        } else {
-            myGameSign = "X";
-            tvPlayer1.setText(otherPlayer + "\'s turn");
-            tvPlayer2.setText(otherPlayer + "\'s turn");
-            myRef.child("playing").child(playerSession).child("turn").setValue(otherPlayer);
-        }
-        myRef.child("playing").child(playerSession).child("turn").addValueEventListener(new ValueEventListener() {
+    private void initBoard(){
+        TextView tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
+        TextView tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
+        tvPlayer1.setText(gameInfo.getPlayer1());
+        tvPlayer2.setText(gameInfo.getPlayer2());
+
+        TextView tvTurn = (TextView) findViewById(R.id.tvTurn);
+        tvTurn.setText(gameInfo.getTurnName());
+
+        /*myRef.child("playing").child(playerSession).child("turn").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -127,7 +124,11 @@ public class OnlineGameActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
+    }
+
+    private void refreshBoard(){
+        Log.d("krisi", gameInfo.toString());
     }
 
     void otherPlayer(int selectedBlock) {
@@ -143,9 +144,10 @@ public class OnlineGameActivity extends AppCompatActivity {
             case 8: selectedImage = (ImageView) findViewById(R.id.iv_32); break;
             case 9: selectedImage = (ImageView) findViewById(R.id.iv_33); break;
         }
-        PlayGame(selectedBlock,selectedImage);
+        //PlayGame(selectedBlock,selectedImage);
     }
 
+    /*
     void ResetGame(){
 
         myRef.child("playing").child(playerSession).removeValue();
@@ -234,7 +236,6 @@ public class OnlineGameActivity extends AppCompatActivity {
     void CheckWinner(){
         int winner = 0;
 
-        /*****************************     Player 1    *********************************/
         if(Player1.contains(1) && Player1.contains(2) && Player1.contains(3)) winner = 1;
         if(Player1.contains(4) && Player1.contains(5) && Player1.contains(6)) winner = 1;
         if(Player1.contains(7) && Player1.contains(8) && Player1.contains(9)) winner = 1;
@@ -244,7 +245,6 @@ public class OnlineGameActivity extends AppCompatActivity {
         if(Player1.contains(1) && Player1.contains(5) && Player1.contains(9)) winner = 1;
         if(Player1.contains(3) && Player1.contains(5) && Player1.contains(7)) winner = 1;
 
-        /*****************************     Player 2    *********************************/
         if(Player2.contains(1) && Player2.contains(2) && Player2.contains(3)) winner = 2;
         if(Player2.contains(4) && Player2.contains(5) && Player2.contains(6)) winner = 2;
         if(Player2.contains(7) && Player2.contains(8) && Player2.contains(9)) winner = 2;
@@ -321,4 +321,6 @@ public class OnlineGameActivity extends AppCompatActivity {
             tvPlayer2.setText(otherPlayer + "\'s turn");
         }
     }
+    */
 }
+

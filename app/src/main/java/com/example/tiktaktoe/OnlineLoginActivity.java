@@ -1,38 +1,27 @@
 package com.example.tiktaktoe;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.icu.text.Edits;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.security.cert.Extension;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class OnlineLoginActivity extends AppCompatActivity {
@@ -51,9 +40,6 @@ public class OnlineLoginActivity extends AppCompatActivity {
     //Button btnLogin;
     //EditText etEmail;
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance("https://tik-tak-toe-7f9c3-default-rtdb.firebaseio.com/");
-    DatabaseReference myRef = database.getReference();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,21 +50,23 @@ public class OnlineLoginActivity extends AppCompatActivity {
         tvSendRequest = (TextView) findViewById(R.id.tvSendRequest);
         tvSendRequest.setText("Please wait...");
 
-        MyInterface UpdateLoginUsers = new MyInterface() {
+        MyInterfaceDataSnapshot UpdateLoginUsers = new MyInterfaceDataSnapshot() {
             @Override
             public void apply(DataSnapshot dataSnapshot) {
                 String key = "";
                 Object val="";
                 Class<?> type;
                 Set<String> set = new HashSet<String>();
-                Iterator i = dataSnapshot.getChildren().iterator();
 
-                while(i.hasNext()){
-                    key = ((DataSnapshot) i.next()).getKey();
-                    val = ((DataSnapshot) i.next()).getValue();
-                    type = val.getClass();
-                    if((val=="open" || type.isArray()) && !key.equalsIgnoreCase(MainActivity.userMe.getUsername())){
-                        set.add(key);
+                if(dataSnapshot.hasChildren()) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        key = child.getKey();
+                        val = child.getValue();
+                        assert val != null;
+                        type = val.getClass();
+                        if ((val.toString().equals("open") || type.isArray() || val instanceof List<?>) && !key.equalsIgnoreCase(MainActivity.userMe.getUsername())) {
+                            set.add(key);
+                        }
                     }
                 }
 
@@ -127,8 +115,6 @@ public class OnlineLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 DataBaseOp.sendInvitation(MainActivity.userMe.getUsername(), OtherPlayer);
-//                myRef.child("users").child(OtherPlayer).child("request").push().setValue(LoginUserID);
-//                StartGame(OtherPlayer + ":" + UserName, OtherPlayer, "From");
             }
         });
         b.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -152,8 +138,6 @@ public class OnlineLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 DataBaseOp.createGame(MainActivity.userMe.getUsername(), OtherPlayer);
-//                myRef.child("users").child(OtherPlayer).child("request").push().setValue(LoginUserID);
-//                StartGame(OtherPlayer + ":" + UserName, OtherPlayer, "From");
             }
         });
         b.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -165,15 +149,9 @@ public class OnlineLoginActivity extends AppCompatActivity {
         b.show();
     }
 
-
-    void StartGame(String PlayerGameID, String OtherPlayer, String requestType){
-        myRef.child("playing").child(PlayerGameID).removeValue();
+    void startGame(String gameId){
         Intent i = new Intent(getApplicationContext(), OnlineGameActivity.class);
-        i.putExtra("player_session", PlayerGameID);
-        i.putExtra("user_name", UserName);
-        i.putExtra("login_uid", LoginUID);
-        i.putExtra("other_player", OtherPlayer);
-        i.putExtra("request_type", requestType);
+        i.putExtra("game_id", gameId);
         startActivity(i);
         finish();
     }
@@ -193,13 +171,21 @@ public class OnlineLoginActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 MainActivity.userMe.setUsername(etUsername.getText().toString());
                 DataBaseOp.playerStatus(etUsername.getText().toString(), true);
-                InterfaceRequest interfaceRequest = new InterfaceRequest() {
+                MyInterfaceString interfaceRequestInvitation = new MyInterfaceString() {
                     @Override
                     public void apply(String name) {
                         confirmInvite(name);
                     }
                 };
-                DataBaseOp.waitForRequest(MainActivity.userMe.getUsername(), interfaceRequest);
+                MyInterfaceString interfaceRequestGameStart = new MyInterfaceString() {
+                    @Override
+                    public void apply(String name) {
+                        startGame(name);
+                    }
+                };
+                DataBaseOp.onlinePlayerStatusUpd(MainActivity.userMe.getUsername(),
+                        interfaceRequestInvitation,
+                        interfaceRequestGameStart);
             }
         });
         b.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -221,9 +207,9 @@ public class OnlineLoginActivity extends AppCompatActivity {
 
 }
 
-interface MyInterface {
-    void apply(DataSnapshot dataSnapshot);
-}
-interface InterfaceRequest {
+interface MyInterfaceString {
     void apply(String name);
+}
+interface MyInterfaceDataSnapshot {
+    void apply(DataSnapshot dataSnapshot);
 }

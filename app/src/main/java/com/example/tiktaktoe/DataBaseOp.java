@@ -1,7 +1,5 @@
 package com.example.tiktaktoe;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -17,7 +15,6 @@ public class DataBaseOp {
     private static DatabaseReference myRef = database.getReference();
 
     public static void playerStatus(String playerName, boolean status){
-        Log.d("Debug", playerName + " " +  status);
         if(status){
             myRef.child("online").child(playerName).setValue("open");
         }
@@ -26,7 +23,7 @@ public class DataBaseOp {
         }
     }
 
-    public static void onlineUserChanges(MyInterface func) {
+    public static void onlineUserChanges(MyInterfaceDataSnapshot func) {
         myRef.child("online").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -40,34 +37,19 @@ public class DataBaseOp {
         });
     }
 
-    public static void waitForRequest(String playerName, InterfaceRequest recieveReq){
+    public static void onlinePlayerStatusUpd(String playerName, MyInterfaceString recieveReq, MyInterfaceString startGame){
+
         myRef.child("online").child(playerName+"").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("DEBUG", snapshot.toString());
                 if(snapshot.hasChildren()) {
                     for (DataSnapshot child : snapshot.getChildren()) {
                         recieveReq.apply(child.getValue().toString());
                     }
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    public static boolean sendInvitation(String playerFrom, String playerTo){
-        final boolean[] flag = {false};
-        myRef.child("online").child(playerTo).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("DEBUG", "here2");
-                if(snapshot.getValue() != "open"){
-                    myRef.child("online").child(playerTo).child("0").setValue(playerFrom);
-                    flag[0] = true;
+                else if(!snapshot.getValue().toString().equals("open")){
+                    startGame.apply(snapshot.getValue().toString());
+                    myRef.child("online").child(playerName+"").removeEventListener(this);
                 }
             }
 
@@ -76,14 +58,53 @@ public class DataBaseOp {
 
             }
         });
-        Log.d("DEBUG", "here " + flag.toString());
+    }
+    public static boolean sendInvitation(String playerFrom, String playerTo){
+        myRef.child("online").child(playerTo).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                myRef.child("online").child(playerTo).child(snapshot.getChildrenCount()+"").setValue(playerFrom);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return false;
     }
+
     public static void createGame(String player1, String player2){
         DatabaseReference newGame = myRef.child("games").push();
-        newGame.child("player1").setValue(player1);
-        newGame.child("player2").setValue(player2);
         myRef.child("online").child(player1).setValue(newGame.getKey());
         myRef.child("online").child(player2).setValue(newGame.getKey());
+        GameInfo gameInfo = new GameInfo(player1, player2);
+        newGame.setValue(gameInfo);
+    }
+    public static void gameUpdates(String gameId, MyInterfaceDataSnapshot func){
+        myRef.child("games").child(gameId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                func.apply(snapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public static void initGame(String gameId, MyInterfaceDataSnapshot initGame) {
+        myRef.child("games").child(gameId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                initGame.apply(snapshot);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

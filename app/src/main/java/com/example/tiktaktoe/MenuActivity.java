@@ -15,7 +15,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void startGame_SinglePlayer(View view) {
-        Intent i = new Intent(this, GameActivity.class);
+        Intent i = new Intent(this, OnlineGameActivity.class);
         startActivity(i);
     }
 
