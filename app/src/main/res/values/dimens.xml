@@ -3,6 +3,9 @@
     <dimen name="width_menu_button">200dp</dimen>
     <dimen name="text_size_menu_button">20sp</dimen>
     
+    <dimen name="player_pull_size">80dp</dimen>
+    <dimen name="small_margin">10dp</dimen>
+
     <dimen name="size_player_sign_image">80dp</dimen>
     <dimen name="size_game_board">260dp</dimen>
 </resources>

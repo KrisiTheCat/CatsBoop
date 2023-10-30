@@ -14,6 +14,8 @@ public class DataBaseOp {
     private static FirebaseDatabase database = FirebaseDatabase.getInstance("https://tik-tak-toe-7f9c3-default-rtdb.firebaseio.com/");
     private static DatabaseReference myRef = database.getReference();
 
+    private static OnlineLoginActivity loginActivity;
+
     public static void playerStatus(String playerName, boolean status){
         if(status){
             myRef.child("online").child(playerName).setValue("open");
@@ -37,6 +39,12 @@ public class DataBaseOp {
         });
     }
 
+    public static void movePawn(String gameId, int playerId, int pawnId, int position) {
+        myRef.child("games").child(gameId)
+                .child("pawns").child(playerId + "")
+                .child(pawnId+"").child("pos").setValue(position);
+
+    }
     public static void onlinePlayerStatusUpd(String playerName, MyInterfaceString recieveReq, MyInterfaceString startGame){
 
         myRef.child("online").child(playerName+"").addValueEventListener(new ValueEventListener() {
@@ -59,7 +67,7 @@ public class DataBaseOp {
             }
         });
     }
-    public static boolean sendInvitation(String playerFrom, String playerTo){
+    public static void sendInvitation(String playerFrom, String playerTo){
         myRef.child("online").child(playerTo).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -71,7 +79,6 @@ public class DataBaseOp {
 
             }
         });
-        return false;
     }
 
     public static void createGame(String player1, String player2){

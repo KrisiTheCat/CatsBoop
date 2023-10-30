@@ -30,23 +30,26 @@
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
                 android:contentDescription="@string/no"
-                android:onClick="GameBoardClick" />
+                android:onClick="GameBoardClick"
+                android:tag="0" />
 
             <ImageView
                 android:id="@+id/iv_12"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="1" />
 
             <ImageView
                 android:id="@+id/iv_13"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="2" />
 
         </TableRow>
 
@@ -60,24 +63,27 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="3" />
 
             <ImageView
                 android:id="@+id/iv_22"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="4" />
 
             <ImageView
                 android:id="@+id/iv_23"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="5" />
 
         </TableRow>
 
@@ -91,36 +97,39 @@
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="6" />
 
             <ImageView
                 android:id="@+id/iv_32"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="7" />
 
             <ImageView
                 android:id="@+id/iv_33"
                 android:layout_width="@dimen/size_player_sign_image"
                 android:layout_height="@dimen/size_player_sign_image"
                 android:layout_margin="3dp"
+                android:contentDescription="@string/no"
                 android:onClick="GameBoardClick"
-                android:contentDescription="@string/no" />
+                android:tag="8" />
 
         </TableRow>
 
     </TableLayout>
 
     <TextView
-        android:id="@+id/tvPlayer1"
+        android:id="@+id/tvPlayer0"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:textAlignment="center"
+        android:layout_marginTop="16dp"
         android:text="Player 1"
+        android:textAlignment="center"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -128,10 +137,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvPlayer2"
+        android:id="@+id/tvPlayer1"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:text="Player 2"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
@@ -144,9 +153,183 @@
         android:id="@+id/tvTurn"
         android:layout_width="97dp"
         android:layout_height="49dp"
-        android:text="TextView"
+        android:text="Turn"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/tvPlayer1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls10"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="0"
+                app:srcCompat="@drawable/pull_1_0" />
+
+            <TextView
+                android:id="@+id/tv_pulls10"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls11"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="1"
+                app:srcCompat="@drawable/pull_1_1" />
+
+            <TextView
+                android:id="@+id/tv_pulls11"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls12"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="2"
+                app:srcCompat="@drawable/pull_1_2" />
+
+            <TextView
+                android:id="@+id/tv_pulls12"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayer0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls00"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="0"
+                app:srcCompat="@drawable/pull_0_0" />
+
+            <TextView
+                android:id="@+id/tv_pulls00"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls01"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="1"
+                app:srcCompat="@drawable/pull_0_1" />
+
+            <TextView
+                android:id="@+id/tv_pulls01"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginLeft="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginRight="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_pulls02"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="@dimen/player_pull_size"
+                android:tag="2"
+                app:srcCompat="@drawable/pull_0_2" />
+
+            <TextView
+                android:id="@+id/tv_pulls02"
+                android:layout_width="@dimen/player_pull_size"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="x3"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,29 +1,32 @@
 package com.example.tiktaktoe;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OnlineGameActivity extends AppCompatActivity {
 
     String gameId = "";
     GameInfo gameInfo;
+    int playerId = -1;
+
+    int pickedSize = -1;
+    int pickedPosition = -1;
+
+    List<List<TextView>> tvPlayersPulls;
+    List<ImageView> ivPositions;
+    List<List<Integer>> drPulls;
 
 
     @Override
@@ -42,28 +45,82 @@ public class OnlineGameActivity extends AppCompatActivity {
                     initBoard();
 
                 } else {
-                    if (dataSnapshot.child("pawns") != gameInfo.getPawns()) {
+                    /*if (!dataSnapshot.child("pawns").equals(gameInfo.getPawns())) {
                         Log.d("krisi", "Diff");
                     } else {
                         Log.d("krisi", "same");
-                    }
-                    gameInfo = (GameInfo) dataSnapshot.getValue();
+                    }*/
+                    gameInfo = dataSnapshot.getValue(GameInfo.class);
                     refreshBoard();
                 }
             }
         };
         DataBaseOp.gameUpdates(gameId, UpdateGame);
 
+        drPulls = new ArrayList<>();
+        drPulls.add(new ArrayList<>());
+        drPulls.get(0).add(R.drawable.pull_0_0);
+        drPulls.get(0).add(R.drawable.pull_0_1);
+        drPulls.get(0).add(R.drawable.pull_0_2);
+        drPulls.add(new ArrayList<>());
+        drPulls.get(1).add(R.drawable.pull_1_0);
+        drPulls.get(1).add(R.drawable.pull_1_1);
+        drPulls.get(1).add(R.drawable.pull_1_2);
+        //DataBaseOp.gameUpdatesPawns(gameId, this);
+
     }
 
     private void initBoard(){
+        playerId = (gameInfo.getPlayer0().equals(MainActivity.userMe.getUsername())) ? 0 : 1;
+        TextView tvPlayer0 = (TextView) findViewById(R.id.tvPlayer0);
         TextView tvPlayer1 = (TextView) findViewById(R.id.tvPlayer1);
-        TextView tvPlayer2 = (TextView) findViewById(R.id.tvPlayer2);
+        tvPlayer0.setText(gameInfo.getPlayer0());
         tvPlayer1.setText(gameInfo.getPlayer1());
-        tvPlayer2.setText(gameInfo.getPlayer2());
 
         TextView tvTurn = (TextView) findViewById(R.id.tvTurn);
         tvTurn.setText(gameInfo.getTurnName());
+
+        tvPlayersPulls = new ArrayList<>();
+        tvPlayersPulls.add(new ArrayList<>());
+        tvPlayersPulls.get(0).add((TextView) findViewById(R.id.tv_pulls00));
+        tvPlayersPulls.get(0).add((TextView) findViewById(R.id.tv_pulls01));
+        tvPlayersPulls.get(0).add((TextView) findViewById(R.id.tv_pulls02));
+        tvPlayersPulls.add(new ArrayList<>());
+        tvPlayersPulls.get(1).add((TextView) findViewById(R.id.tv_pulls10));
+        tvPlayersPulls.get(1).add((TextView) findViewById(R.id.tv_pulls11));
+        tvPlayersPulls.get(1).add((TextView) findViewById(R.id.tv_pulls12));
+
+        List<ImageView> pulls = new ArrayList<>();
+        if(playerId==0){
+            pulls.add((ImageView) findViewById(R.id.iv_pulls00));
+            pulls.add((ImageView) findViewById(R.id.iv_pulls01));
+            pulls.add((ImageView) findViewById(R.id.iv_pulls02));
+        }
+        else {
+            pulls.add((ImageView) findViewById(R.id.iv_pulls10));
+            pulls.add((ImageView) findViewById(R.id.iv_pulls11));
+            pulls.add((ImageView) findViewById(R.id.iv_pulls12));
+        }
+        for(int i = 0; i < 3; i++){
+            pulls.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view){
+                    pickedSize = Integer.parseInt(view.getTag().toString());
+                    Log.d("krisi", "pickedSize: " + pickedSize);
+                }
+            });
+        }
+
+        ivPositions = new ArrayList<>();
+        ivPositions.add((ImageView) findViewById(R.id.iv_11));
+        ivPositions.add((ImageView) findViewById(R.id.iv_12));
+        ivPositions.add((ImageView) findViewById(R.id.iv_13));
+        ivPositions.add((ImageView) findViewById(R.id.iv_21));
+        ivPositions.add((ImageView) findViewById(R.id.iv_22));
+        ivPositions.add((ImageView) findViewById(R.id.iv_23));
+        ivPositions.add((ImageView) findViewById(R.id.iv_31));
+        ivPositions.add((ImageView) findViewById(R.id.iv_32));
+        ivPositions.add((ImageView) findViewById(R.id.iv_33));
 
         /*myRef.child("playing").child(playerSession).child("turn").addValueEventListener(new ValueEventListener() {
             @Override
@@ -127,11 +184,25 @@ public class OnlineGameActivity extends AppCompatActivity {
         });*/
     }
 
-    private void refreshBoard(){
+    public void refreshBoard(){
+        for(int pl = 0; pl < 2; pl++){
+            for(int s = 0; s < 3; s++){
+                tvPlayersPulls.get(pl).get(s).setText("x" + gameInfo.getFreePawns(pl, s));
+            }
+        }
+        for(int i = 0; i < 9; i++){
+            for(int pl = 0; pl < 2; pl++){
+                int pos = gameInfo.getPawns().get(pl).get(i).getPos();
+                if(pos != -1) {
+                    Log.d("krisi", "Pawn " + pl + " " + i + ": " + pos);
+                    ivPositions.get(pos).setBackgroundResource(drPulls.get(pl).get(i/3));
+                }
+            }
+        }
         Log.d("krisi", gameInfo.toString());
     }
 
-    void otherPlayer(int selectedBlock) {
+    /*void otherPlayer(int selectedBlock) {
         ImageView selectedImage = (ImageView) findViewById(R.id.iv_11);
         switch (selectedBlock){
             case 1: selectedImage = (ImageView) findViewById(R.id.iv_11); break;
@@ -145,7 +216,70 @@ public class OnlineGameActivity extends AppCompatActivity {
             case 9: selectedImage = (ImageView) findViewById(R.id.iv_33); break;
         }
         //PlayGame(selectedBlock,selectedImage);
+    }*/
+
+    public void GameBoardClick(View view){
+        if(pickedSize == -1){
+            Toast toast = Toast.makeText(this, "Please select pull", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else if(gameInfo.getFreePawns(playerId, pickedSize) == 0){
+            Toast toast = Toast.makeText(this, "Not enough pulls", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            pickedPosition = Integer.parseInt(view.getTag().toString());
+            Log.d("krisi", "pickedPosition: " + pickedPosition);
+            if(gameInfo.checkPossibleMove(playerId, pickedSize, pickedPosition)){
+                DataBaseOp.movePawn(gameId, playerId, pickedSize*3 + 3-gameInfo.getFreePawns(playerId, pickedSize), pickedPosition);
+            }
+            else {
+                Toast toast = Toast.makeText(this, "Invalid play", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+
+
+        /*
+        System.out.println("GAMEBOARDCLICK " + userName);
+        ImageView selectedImage = (ImageView) view;
+
+        if(playerSession.length() <= 0){
+            Intent i = new Intent(getApplicationContext(), OnlineLoginActivity.class);
+            startActivity(i);
+            finish();
+        } else {
+            int selectedBlock = 0;
+            switch(selectedImage.getId()){
+                case R.id.iv_11: selectedBlock = 1; break;
+                case R.id.iv_12: selectedBlock = 2; break;
+                case R.id.iv_13: selectedBlock = 3; break;
+                case R.id.iv_21: selectedBlock = 4; break;
+                case R.id.iv_22: selectedBlock = 5; break;
+                case R.id.iv_23: selectedBlock = 6; break;
+                case R.id.iv_31: selectedBlock = 7; break;
+                case R.id.iv_32: selectedBlock = 8; break;
+                case R.id.iv_33: selectedBlock = 9; break;
+            }
+            myRef.child("playing").child(playerSession).child("game").child("block:"+selectedBlock).setValue(userName);
+            myRef.child("playing").child(playerSession).child("turn").setValue(otherPlayer);
+            ImageView iv = (ImageView) findViewById(R.id.iv_11);
+            if(iv.isClickable()){
+                setEnableClick(false);
+            } else {
+                setEnableClick(true);
+            }
+            if(activePlayer == 1) activePlayer = 2;
+            else activePlayer = 1;
+            PlayGame(selectedBlock, selectedImage);
+        }*/
     }
+
+    /*public void movePawn(int playerId, int size, String position){
+        Log.d("krisi", playerId+"");
+        Log.d("krisi", size+"");
+        Log.d("krisi", position+"");
+    }*/
 
     /*
     void ResetGame(){
