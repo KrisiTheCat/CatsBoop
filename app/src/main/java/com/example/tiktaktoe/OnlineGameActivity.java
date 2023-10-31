@@ -27,6 +27,7 @@ public class OnlineGameActivity extends AppCompatActivity {
     List<List<TextView>> tvPlayersPulls;
     List<ImageView> ivPositions;
     List<List<Integer>> drPulls;
+    TextView tvTurn;
 
 
     @Override
@@ -43,13 +44,9 @@ public class OnlineGameActivity extends AppCompatActivity {
                     gameInfo = dataSnapshot.getValue(GameInfo.class);
                     Log.d("krisi", gameInfo.toString());
                     initBoard();
+                    refreshBoard();
 
                 } else {
-                    /*if (!dataSnapshot.child("pawns").equals(gameInfo.getPawns())) {
-                        Log.d("krisi", "Diff");
-                    } else {
-                        Log.d("krisi", "same");
-                    }*/
                     gameInfo = dataSnapshot.getValue(GameInfo.class);
                     refreshBoard();
                 }
@@ -77,9 +74,6 @@ public class OnlineGameActivity extends AppCompatActivity {
         tvPlayer0.setText(gameInfo.getPlayer0());
         tvPlayer1.setText(gameInfo.getPlayer1());
 
-        TextView tvTurn = (TextView) findViewById(R.id.tvTurn);
-        tvTurn.setText(gameInfo.getTurnName());
-
         tvPlayersPulls = new ArrayList<>();
         tvPlayersPulls.add(new ArrayList<>());
         tvPlayersPulls.get(0).add((TextView) findViewById(R.id.tv_pulls00));
@@ -105,8 +99,21 @@ public class OnlineGameActivity extends AppCompatActivity {
             pulls.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view){
+                    if(gameInfo.getTurn() != playerId) {
+                        Toast toast = Toast.makeText(OnlineGameActivity.this, "Not your turn", Toast.LENGTH_SHORT);
+                        toast.show();
+                        return;
+                    }
                     pickedSize = Integer.parseInt(view.getTag().toString());
-                    Log.d("krisi", "pickedSize: " + pickedSize);
+                    if(gameInfo.getFreePawns(playerId, pickedSize) == 0) {
+                        pickedSize = -1;
+                        Toast toast = Toast.makeText(OnlineGameActivity.this, "Not enough pawns", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                    else {
+                        Log.d("krisi", "pickedSize: " + pickedSize);
+                    }
+
                 }
             });
         }
@@ -121,6 +128,8 @@ public class OnlineGameActivity extends AppCompatActivity {
         ivPositions.add((ImageView) findViewById(R.id.iv_31));
         ivPositions.add((ImageView) findViewById(R.id.iv_32));
         ivPositions.add((ImageView) findViewById(R.id.iv_33));
+
+        tvTurn = (TextView) findViewById(R.id.tvTurn);
 
         /*myRef.child("playing").child(playerSession).child("turn").addValueEventListener(new ValueEventListener() {
             @Override
@@ -185,6 +194,9 @@ public class OnlineGameActivity extends AppCompatActivity {
     }
 
     public void refreshBoard(){
+
+        tvTurn.setText(gameInfo.getTurnName());
+
         for(int pl = 0; pl < 2; pl++){
             for(int s = 0; s < 3; s++){
                 tvPlayersPulls.get(pl).get(s).setText("x" + gameInfo.getFreePawns(pl, s));
@@ -219,7 +231,11 @@ public class OnlineGameActivity extends AppCompatActivity {
     }*/
 
     public void GameBoardClick(View view){
-        if(pickedSize == -1){
+        if(gameInfo.getTurn() != playerId) {
+            Toast toast = Toast.makeText(OnlineGameActivity.this, "Not your turn", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else if(pickedSize == -1){
             Toast toast = Toast.makeText(this, "Please select pull", Toast.LENGTH_SHORT);
             toast.show();
         }
@@ -231,7 +247,15 @@ public class OnlineGameActivity extends AppCompatActivity {
             pickedPosition = Integer.parseInt(view.getTag().toString());
             Log.d("krisi", "pickedPosition: " + pickedPosition);
             if(gameInfo.checkPossibleMove(playerId, pickedSize, pickedPosition)){
-                DataBaseOp.movePawn(gameId, playerId, pickedSize*3 + 3-gameInfo.getFreePawns(playerId, pickedSize), pickedPosition);
+                int pawnId = pickedSize*3 + 3-gameInfo.getFreePawns(playerId, pickedSize);
+                gameInfo.movePawn(playerId, pawnId, pickedPosition);
+                GameStates newState = gameInfo.checkWin();
+                Log.d("krisi", newState.toString());
+                if(newState != GameStates.PLAYING) {
+                    Log.d("krisi", "inside "+newState.toString());
+                    DataBaseOp.updateState(gameId, newState);
+                }
+                DataBaseOp.movePawn(gameId, playerId, pawnId, pickedPosition);
             }
             else {
                 Toast toast = Toast.makeText(this, "Invalid play", Toast.LENGTH_SHORT);
@@ -274,12 +298,6 @@ public class OnlineGameActivity extends AppCompatActivity {
             PlayGame(selectedBlock, selectedImage);
         }*/
     }
-
-    /*public void movePawn(int playerId, int size, String position){
-        Log.d("krisi", playerId+"");
-        Log.d("krisi", size+"");
-        Log.d("krisi", position+"");
-    }*/
 
     /*
     void ResetGame(){

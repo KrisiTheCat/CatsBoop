@@ -43,6 +43,8 @@ public class DataBaseOp {
         myRef.child("games").child(gameId)
                 .child("pawns").child(playerId + "")
                 .child(pawnId+"").child("pos").setValue(position);
+        myRef.child("games").child(gameId)
+                .child("turn").setValue((1-playerId));
 
     }
     public static void onlinePlayerStatusUpd(String playerName, MyInterfaceString recieveReq, MyInterfaceString startGame){
@@ -113,5 +115,10 @@ public class DataBaseOp {
 
             }
         });
+    }
+
+    public static void updateState(String gameId, GameStates newState) {
+        myRef.child("games").child(gameId)
+                .child("gameState").setValue(newState);
     }
 }

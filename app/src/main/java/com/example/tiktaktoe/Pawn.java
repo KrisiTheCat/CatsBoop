@@ -1,9 +1,9 @@
 package com.example.tiktaktoe;
 
 public class Pawn {
-    int affiliation; //0 or 1
-    int size; // 0,1 or 2
-    int pos; // -1 to 8
+    private int affiliation; //0 or 1
+    private int size; // 0,1 or 2
+    private int pos; // -1 to 8
 
     public Pawn() {
         this.affiliation = 0;
