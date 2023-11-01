@@ -2,6 +2,7 @@ package com.example.tiktaktoe;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnlineGameActivity extends AppCompatActivity {
-
+//TODO once selected the pawn size glows
+//TODO after setting place, the pawn size is unselected
     String gameId = "";
     GameInfo gameInfo;
     int playerId = -1;
@@ -211,7 +213,24 @@ public class OnlineGameActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.d("krisi", gameInfo.toString());
+
+        if(gameInfo.getGameState() != GameStates.PLAYING && gameInfo.getGameState() != GameStates.INIT){
+            Thread timer = new Thread(){
+                public void run(){
+                    try{
+                        sleep(100);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    } finally {
+                        Intent i = new Intent(getApplicationContext(), WinActivity.class);
+                        i.putExtra("game_id", gameId);
+                        startActivity(i);
+                        finish();
+                    }
+                }
+            };
+            timer.start();
+        }
     }
 
     /*void otherPlayer(int selectedBlock) {
@@ -252,7 +271,6 @@ public class OnlineGameActivity extends AppCompatActivity {
                 GameStates newState = gameInfo.checkWin();
                 Log.d("krisi", newState.toString());
                 if(newState != GameStates.PLAYING) {
-                    Log.d("krisi", "inside "+newState.toString());
                     DataBaseOp.updateState(gameId, newState);
                 }
                 DataBaseOp.movePawn(gameId, playerId, pawnId, pickedPosition);
@@ -336,143 +354,7 @@ public class OnlineGameActivity extends AppCompatActivity {
         }
     }
 
-    public void GameBoardClick(View view){
-        System.out.println("GAMEBOARDCLICK " + userName);
-        ImageView selectedImage = (ImageView) view;
 
-        if(playerSession.length() <= 0){
-            Intent i = new Intent(getApplicationContext(), OnlineLoginActivity.class);
-            startActivity(i);
-            finish();
-        } else {
-            int selectedBlock = 0;
-            switch(selectedImage.getId()){
-                case R.id.iv_11: selectedBlock = 1; break;
-                case R.id.iv_12: selectedBlock = 2; break;
-                case R.id.iv_13: selectedBlock = 3; break;
-                case R.id.iv_21: selectedBlock = 4; break;
-                case R.id.iv_22: selectedBlock = 5; break;
-                case R.id.iv_23: selectedBlock = 6; break;
-                case R.id.iv_31: selectedBlock = 7; break;
-                case R.id.iv_32: selectedBlock = 8; break;
-                case R.id.iv_33: selectedBlock = 9; break;
-            }
-            myRef.child("playing").child(playerSession).child("game").child("block:"+selectedBlock).setValue(userName);
-            myRef.child("playing").child(playerSession).child("turn").setValue(otherPlayer);
-            ImageView iv = (ImageView) findViewById(R.id.iv_11);
-            if(iv.isClickable()){
-                setEnableClick(false);
-            } else {
-                setEnableClick(true);
-            }
-            if(activePlayer == 1) activePlayer = 2;
-            else activePlayer = 1;
-            PlayGame(selectedBlock, selectedImage);
-        }
-    }
-
-    void PlayGame(int selectedBlock, ImageView selectedImage){
-        if(gameState == 1){
-            if(activePlayer == 1){
-                selectedImage.setImageResource(R.drawable.ttt_x);
-                Player1.add(selectedBlock);
-            } else if(activePlayer == 2){
-                selectedImage.setImageResource(R.drawable.ttt_o);
-                Player2.add(selectedBlock);
-            }
-            selectedImage.setEnabled(false);
-            CheckWinner();
-        }
-    }
-
-    void CheckWinner(){
-        int winner = 0;
-
-        if(Player1.contains(1) && Player1.contains(2) && Player1.contains(3)) winner = 1;
-        if(Player1.contains(4) && Player1.contains(5) && Player1.contains(6)) winner = 1;
-        if(Player1.contains(7) && Player1.contains(8) && Player1.contains(9)) winner = 1;
-        if(Player1.contains(1) && Player1.contains(4) && Player1.contains(7)) winner = 1;
-        if(Player1.contains(2) && Player1.contains(5) && Player1.contains(8)) winner = 1;
-        if(Player1.contains(3) && Player1.contains(6) && Player1.contains(9)) winner = 1;
-        if(Player1.contains(1) && Player1.contains(5) && Player1.contains(9)) winner = 1;
-        if(Player1.contains(3) && Player1.contains(5) && Player1.contains(7)) winner = 1;
-
-        if(Player2.contains(1) && Player2.contains(2) && Player2.contains(3)) winner = 2;
-        if(Player2.contains(4) && Player2.contains(5) && Player2.contains(6)) winner = 2;
-        if(Player2.contains(7) && Player2.contains(8) && Player2.contains(9)) winner = 2;
-        if(Player2.contains(1) && Player2.contains(4) && Player2.contains(7)) winner = 2;
-        if(Player2.contains(2) && Player2.contains(5) && Player2.contains(8)) winner = 2;
-        if(Player2.contains(3) && Player2.contains(6) && Player2.contains(9)) winner = 2;
-        if(Player2.contains(1) && Player2.contains(5) && Player2.contains(9)) winner = 2;
-        if(Player2.contains(3) && Player2.contains(5) && Player2.contains(7)) winner = 2;
-
-        if(winner != 0 && gameState == 1){
-            if(winner == 1){
-                showAlert(otherPlayer + " is winner");
-                winnerString = otherPlayer;
-            } else {
-                showAlert("You won the game");
-                winnerString = userName;
-            }
-            gameState = 2;
-        }
-
-        ArrayList<Integer> emptyBlocks = new ArrayList<Integer>();
-        for(int i = 1; i <= 9 ; i++){
-            if(!(Player1.contains(i) || Player2.contains(i))){
-                emptyBlocks.add(i);
-            }
-        }
-        if(emptyBlocks.size() == 0){
-            if(gameState == 1){
-                AlertDialog.Builder b = new AlertDialog.Builder(this,android.R.style.Theme_Material_Dialog_Alert);
-                showAlert("Draw");
-            }
-            gameState = 2;
-        }
-    }
-
-    void showAlert(String title){
-        AlertDialog.Builder b = new AlertDialog.Builder(this, R.style.TransperentDialog);
-        b.setTitle(title)
-                .setMessage("Start a new game?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ResetGame();
-                    }
-                })
-                .setNegativeButton("Menu", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(getApplicationContext(), MenuActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
-    void setEnableClick(boolean trueOrFalse) {
-        ImageView iv;
-        iv = (ImageView) findViewById(R.id.iv_11); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_12); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_13); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_21); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_22); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_23); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_31); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_32); iv.setClickable(trueOrFalse);
-        iv = (ImageView) findViewById(R.id.iv_33); iv.setClickable(trueOrFalse);
-        if(trueOrFalse){
-            tvPlayer1.setText("Your turn");
-            tvPlayer2.setText("Your turn");
-        } else {
-            tvPlayer1.setText(otherPlayer + "\'s turn");
-            tvPlayer2.setText(otherPlayer + "\'s turn");
-        }
-    }
     */
 }
 

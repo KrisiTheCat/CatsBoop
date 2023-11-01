@@ -6,18 +6,20 @@
     <string name="about">About</string>
     <string name="exit">Exit</string>
     <string name="back">Back</string>
+    <string name="again">Play again</string>
+    <string name="menu">Home menu</string>
 
     <string name="no">No</string>
 
     <string name="about_note">
         This game is made by Kristina Stoyanova
         \nHave fun playing!</string>
-    <string name="title_activity_win_screen">WinScreen</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
+
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+
+    <string name="win">has won</string>
+    <string name="tie">It\'s a tie!</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

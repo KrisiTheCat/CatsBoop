@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 public class OnlineLoginActivity extends AppCompatActivity {
-
+//TODO user's name cannot start with _
     ListView lv_loginUsers;
     ArrayList<String> list_loginUsers = new ArrayList<String>();
     ArrayAdapter adpt;
@@ -170,7 +170,7 @@ public class OnlineLoginActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 MainActivity.userMe.setUsername(etUsername.getText().toString());
-                DataBaseOp.playerStatus(etUsername.getText().toString(), true);
+                DataBaseOp.playerStatus(etUsername.getText().toString(), true, "");
                 MyInterfaceString interfaceRequestInvitation = new MyInterfaceString() {
                     @Override
                     public void apply(String name) {
@@ -180,6 +180,7 @@ public class OnlineLoginActivity extends AppCompatActivity {
                 MyInterfaceString interfaceRequestGameStart = new MyInterfaceString() {
                     @Override
                     public void apply(String name) {
+                        MainActivity.userMe.setGameId(name);
                         startGame(name);
                     }
                 };
@@ -202,7 +203,8 @@ public class OnlineLoginActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        DataBaseOp.playerStatus(MainActivity.userMe.getUsername(), false);
+        if(MainActivity.userMe.getGameId().length() == 0)
+            DataBaseOp.playerStatus(MainActivity.userMe.getUsername(), false, "");
     }
 
 }

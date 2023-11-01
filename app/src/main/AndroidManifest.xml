@@ -14,13 +14,17 @@
         <activity
             android:name=".OnlineGameActivity"
             android:exported="false"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".OnlineLoginActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".AboutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WinActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

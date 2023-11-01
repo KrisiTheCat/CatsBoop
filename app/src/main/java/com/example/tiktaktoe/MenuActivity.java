@@ -14,22 +14,22 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
     }
 
-    public void startGame_SinglePlayer(View view) {
+    public void startGameSinglePlayer(View view) {
         Intent i = new Intent(this, OnlineGameActivity.class);
         startActivity(i);
     }
 
-    public void EndGame(View view) {
+    public void endGame(View view) {
         int pid = android.os.Process.myPid();
         android.os.Process.killProcess(pid);
     }
 
-    public void ShowAboutNote(View view) {
+    public void showAboutNote(View view) {
         Intent i = new Intent(this, AboutActivity.class);
         startActivity(i);
     }
 
-    public void StartGameOnline(View view){
+    public void startGameOnline(View view){
         Intent i = new Intent(this, OnlineLoginActivity.class);
         startActivity(i);
     }

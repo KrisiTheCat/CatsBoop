@@ -14,7 +14,7 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
     }
 
-    public void BackToMainMenu(View view) {
+    public void backToMainMenu(View view) {
         Intent i = new Intent(this, MenuActivity.class);
         startActivity(i);
         finish();

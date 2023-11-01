@@ -31,7 +31,7 @@
         fancy:fb_radius="30dp"
         fancy:fb_text="@string/single_player"
         fancy:fb_textColor="#FFFFFF"
-        android:onClick="startGame_SinglePlayer"/>
+        android:onClick="startGameSinglePlayer"/>
 
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/btn_online"
@@ -52,7 +52,7 @@
         fancy:fb_radius="30dp"
         fancy:fb_text="@string/online"
         fancy:fb_textColor="#FFFFFF"
-        android:onClick="StartGameOnline"/>
+        android:onClick="startGameOnline"/>
 
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/btn_about"
@@ -73,7 +73,7 @@
         fancy:fb_radius="30dp"
         fancy:fb_text="@string/about"
         fancy:fb_textColor="#FFFFFF"
-        android:onClick="ShowAboutNote"/>
+        android:onClick="showAboutNote"/>
 
 
     <mehdi.sakout.fancybuttons.FancyButton
@@ -95,6 +95,6 @@
         fancy:fb_radius="30dp"
         fancy:fb_text="@string/exit"
         fancy:fb_textColor="#FFFFFF"
-        android:onClick="EndGame"/>
+        android:onClick="endGame"/>
 
 </LinearLayout>
