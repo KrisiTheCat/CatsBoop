@@ -6,8 +6,13 @@
     <string name="about">About</string>
     <string name="exit">Exit</string>
     <string name="back">Back</string>
+    <string name="register">Register</string>
     <string name="again">Play again</string>
     <string name="menu">Home menu</string>
+
+    <string name="errorUserName">Invalid username. It should consist only of latin letters</string>
+
+    <string name="questionUserName">Please enter how you wish to be called?</string>
 
     <string name="no">No</string>
 

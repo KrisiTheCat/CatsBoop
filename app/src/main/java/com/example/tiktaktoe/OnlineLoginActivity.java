@@ -7,12 +7,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 public class OnlineLoginActivity extends AppCompatActivity {
-//TODO user's name cannot start with _
     ListView lv_loginUsers;
     ArrayList<String> list_loginUsers = new ArrayList<String>();
     ArrayAdapter adpt;
@@ -163,13 +165,41 @@ public class OnlineLoginActivity extends AppCompatActivity {
         b.setView(dialogView);
 
         final EditText etUsername = (EditText) dialogView.findViewById(R.id.etUsername);
+        final TextView tvError = (TextView) dialogView.findViewById(R.id.tvError);
+        final Button btnRegister = (Button) dialogView.findViewById(R.id.btnRegister);
+        final Button btnBack = (Button) dialogView.findViewById(R.id.btnBack);
 
-        b.setTitle("Username");
-        b.setMessage("Please enter how you wish to be called");
-        b.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+        b.setTitle("Username pick");
+        b.setCancelable(false);
+        etUsername.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+                if(checkUsername(s.toString())){
+                    tvError.setVisibility(View.INVISIBLE);
+                    btnRegister.setEnabled(true);
+                }
+                else{
+                    tvError.setVisibility(View.VISIBLE);
+                    btnRegister.setEnabled(false);
+                }
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        final AlertDialog alert = b.create();
+        alert.show();
+        btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
+                alert.dismiss();
                 MainActivity.userMe.setUsername(etUsername.getText().toString());
+
+                TextView tvLoginUser = (TextView) findViewById(R.id.tvLoginUser);
+                tvLoginUser.setText("ID: " + (etUsername.getText().toString()));
+
                 DataBaseOp.playerStatus(etUsername.getText().toString(), true, "");
                 MyInterfaceString interfaceRequestInvitation = new MyInterfaceString() {
                     @Override
@@ -189,15 +219,30 @@ public class OnlineLoginActivity extends AppCompatActivity {
                         interfaceRequestGameStart);
             }
         });
-        b.setNegativeButton("Back", new DialogInterface.OnClickListener() {
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), MenuActivity.class);
                 startActivity(i);
                 finish();
             }
         });
-        b.show();
+    }
+
+    private boolean checkUsername(String s) {
+        if (s == null){
+            return false;
+        }
+        if (s.length()==0){
+            return false;
+        }
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            if (!(Character.isLetter(s.charAt(i)))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
