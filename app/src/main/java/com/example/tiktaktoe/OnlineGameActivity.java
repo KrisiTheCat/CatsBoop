@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,8 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnlineGameActivity extends AppCompatActivity {
-//TODO once selected the pawn size glows
-//TODO after setting place, the pawn size is unselected
+
+    //TODO once selected the pawn size glows
+    //TODO after setting place, the pawn size is unselected
+    //TODO when player leaves
+
     String gameId = "";
     GameInfo gameInfo;
     int playerId = -1;
@@ -39,22 +43,8 @@ public class OnlineGameActivity extends AppCompatActivity {
 
         gameId = getIntent().getExtras().get("game_id").toString();
         gameInfo = new GameInfo();
-        MyInterfaceDataSnapshot UpdateGame = new MyInterfaceDataSnapshot() {
-            @Override
-            public void apply(DataSnapshot dataSnapshot) {
-                if (gameInfo.getGameState() == GameStates.INIT) {
-                    gameInfo = dataSnapshot.getValue(GameInfo.class);
-                    Log.d("krisi", gameInfo.toString());
-                    initBoard();
-                    refreshBoard();
-
-                } else {
-                    gameInfo = dataSnapshot.getValue(GameInfo.class);
-                    refreshBoard();
-                }
-            }
-        };
-        DataBaseOp.gameUpdates(gameId, UpdateGame);
+        DataBaseOp.setGameActivity(this);
+        DataBaseOp.gameUpdates(gameId);
 
         drPulls = new ArrayList<>();
         drPulls.add(new ArrayList<>());
@@ -67,6 +57,19 @@ public class OnlineGameActivity extends AppCompatActivity {
         drPulls.get(1).add(R.drawable.pull_1_2);
         //DataBaseOp.gameUpdatesPawns(gameId, this);
 
+    }
+
+    public void gameUpdate(DataSnapshot dataSnapshot){
+        if (gameInfo.getGameState() == GameStates.INIT) {
+            gameInfo = dataSnapshot.getValue(GameInfo.class);
+            Log.d("krisi", gameInfo.toString());
+            initBoard();
+            refreshBoard();
+
+        } else {
+            gameInfo = dataSnapshot.getValue(GameInfo.class);
+            refreshBoard();
+        }
     }
 
     private void initBoard(){
@@ -113,7 +116,17 @@ public class OnlineGameActivity extends AppCompatActivity {
                         toast.show();
                     }
                     else {
-                        Log.d("krisi", "pickedSize: " + pickedSize);
+//                        final View view1 = findViewById(R.id.iv_pulls10);
+//                        final View view2 = findViewById(R.id.ivLight);
+//                        int test1[] = new int[2];
+//                        view1.getLocationOnScreen(test1);
+//                        float x = test1[0];
+//                        float y = test1[1];
+//
+//                        view2.setX(x);
+//                        view2.setY(y);
+//                        Log.d("krisi", "x: " + x);
+//                        Log.d("krisi", "y: " + y);
                     }
 
                 }
@@ -231,6 +244,7 @@ public class OnlineGameActivity extends AppCompatActivity {
             };
             timer.start();
         }
+
     }
 
     /*void otherPlayer(int selectedBlock) {
@@ -249,112 +263,31 @@ public class OnlineGameActivity extends AppCompatActivity {
         //PlayGame(selectedBlock,selectedImage);
     }*/
 
-    public void GameBoardClick(View view){
-        if(gameInfo.getTurn() != playerId) {
+    public void GameBoardClick(View view) {
+        if (gameInfo.getTurn() != playerId) {
             Toast toast = Toast.makeText(OnlineGameActivity.this, "Not your turn", Toast.LENGTH_SHORT);
             toast.show();
-        }
-        else if(pickedSize == -1){
+        } else if (pickedSize == -1) {
             Toast toast = Toast.makeText(this, "Please select pull", Toast.LENGTH_SHORT);
             toast.show();
-        }
-        else if(gameInfo.getFreePawns(playerId, pickedSize) == 0){
+        } else if (gameInfo.getFreePawns(playerId, pickedSize) == 0) {
             Toast toast = Toast.makeText(this, "Not enough pulls", Toast.LENGTH_SHORT);
             toast.show();
-        }
-        else {
+        } else {
             pickedPosition = Integer.parseInt(view.getTag().toString());
-            Log.d("krisi", "pickedPosition: " + pickedPosition);
-            if(gameInfo.checkPossibleMove(playerId, pickedSize, pickedPosition)){
-                int pawnId = pickedSize*3 + 3-gameInfo.getFreePawns(playerId, pickedSize);
+            if (gameInfo.checkPossibleMove(playerId, pickedSize, pickedPosition)) {
+                int pawnId = pickedSize * 3 + 3 - gameInfo.getFreePawns(playerId, pickedSize);
                 gameInfo.movePawn(playerId, pawnId, pickedPosition);
                 GameStates newState = gameInfo.checkWin();
-                Log.d("krisi", newState.toString());
-                if(newState != GameStates.PLAYING) {
+                if (newState != GameStates.PLAYING) {
                     DataBaseOp.updateState(gameId, newState);
                 }
                 DataBaseOp.movePawn(gameId, playerId, pawnId, pickedPosition);
-            }
-            else {
+            } else {
                 Toast toast = Toast.makeText(this, "Invalid play", Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
-
-
-        /*
-        System.out.println("GAMEBOARDCLICK " + userName);
-        ImageView selectedImage = (ImageView) view;
-
-        if(playerSession.length() <= 0){
-            Intent i = new Intent(getApplicationContext(), OnlineLoginActivity.class);
-            startActivity(i);
-            finish();
-        } else {
-            int selectedBlock = 0;
-            switch(selectedImage.getId()){
-                case R.id.iv_11: selectedBlock = 1; break;
-                case R.id.iv_12: selectedBlock = 2; break;
-                case R.id.iv_13: selectedBlock = 3; break;
-                case R.id.iv_21: selectedBlock = 4; break;
-                case R.id.iv_22: selectedBlock = 5; break;
-                case R.id.iv_23: selectedBlock = 6; break;
-                case R.id.iv_31: selectedBlock = 7; break;
-                case R.id.iv_32: selectedBlock = 8; break;
-                case R.id.iv_33: selectedBlock = 9; break;
-            }
-            myRef.child("playing").child(playerSession).child("game").child("block:"+selectedBlock).setValue(userName);
-            myRef.child("playing").child(playerSession).child("turn").setValue(otherPlayer);
-            ImageView iv = (ImageView) findViewById(R.id.iv_11);
-            if(iv.isClickable()){
-                setEnableClick(false);
-            } else {
-                setEnableClick(true);
-            }
-            if(activePlayer == 1) activePlayer = 2;
-            else activePlayer = 1;
-            PlayGame(selectedBlock, selectedImage);
-        }*/
     }
-
-    /*
-    void ResetGame(){
-
-        myRef.child("playing").child(playerSession).removeValue();
-        winnerString = "";
-
-        gameState = 1;
-        activePlayer = 1;
-        Player1.clear();
-        Player2.clear();
-
-        ImageView iv;
-        iv = (ImageView) findViewById(R.id.iv_11); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_12); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_13); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_21); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_22); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_23); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_31); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_32); iv.setImageResource(0); iv.setEnabled(true);
-        iv = (ImageView) findViewById(R.id.iv_33); iv.setImageResource(0); iv.setEnabled(true);
-
-        if(userName == winnerString){
-            myRef.child("playing").child(playerSession).child("turn").setValue(otherPlayer);
-            requestType = "To";
-            setEnableClick(false);
-            activePlayer = 2;
-            myGameSign = "X";
-        } else {
-            myRef.child("playing").child(playerSession).child("turn").setValue(userName);
-            requestType = "From";
-            setEnableClick(true);
-            activePlayer = 1;
-            myGameSign = "O";
-        }
-    }
-
-
-    */
 }
 

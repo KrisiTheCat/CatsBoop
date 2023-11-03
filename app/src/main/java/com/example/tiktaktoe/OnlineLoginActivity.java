@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -47,38 +48,11 @@ public class OnlineLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_login);
 
+        DataBaseOp.setLoginActivity(this);
         JoinOnlineGame();
 
         tvSendRequest = (TextView) findViewById(R.id.tvSendRequest);
         tvSendRequest.setText("Please wait...");
-
-        MyInterfaceDataSnapshot UpdateLoginUsers = new MyInterfaceDataSnapshot() {
-            @Override
-            public void apply(DataSnapshot dataSnapshot) {
-                String key = "";
-                Object val="";
-                Class<?> type;
-                Set<String> set = new HashSet<String>();
-
-                if(dataSnapshot.hasChildren()) {
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        key = child.getKey();
-                        val = child.getValue();
-                        assert val != null;
-                        type = val.getClass();
-                        if ((val.toString().equals("open") || type.isArray() || val instanceof List<?>) && !key.equalsIgnoreCase(MainActivity.userMe.getUsername())) {
-                            set.add(key);
-                        }
-                    }
-                }
-
-                adpt.clear();
-                adpt.addAll(set);
-                adpt.notifyDataSetChanged();
-                tvSendRequest.setText("Send request to");
-            }
-        };
-        DataBaseOp.onlineUserChanges(UpdateLoginUsers);
 
         adpt = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list_loginUsers){
 
@@ -103,6 +77,31 @@ public class OnlineLoginActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    public void userChanges(DataSnapshot dataSnapshot) {
+        String key = "";
+        Object val="";
+        Class<?> type;
+        Set<String> set = new HashSet<String>();
+
+        if(dataSnapshot.hasChildren()) {
+            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                key = child.getKey();
+                val = child.getValue();
+                assert val != null;
+                type = val.getClass();
+                if ((val.toString().equals("open") || type.isArray() || val instanceof List<?>) && !key.equalsIgnoreCase(MainActivity.userMe.getUsername())) {
+                    set.add(key);
+                }
+            }
+        }
+
+        adpt.clear();
+        adpt.addAll(set);
+        adpt.notifyDataSetChanged();
+        tvSendRequest.setText("Send request to");
     }
 
     void sendInvite(final String OtherPlayer){
@@ -152,6 +151,7 @@ public class OnlineLoginActivity extends AppCompatActivity {
     }
 
     void startGame(String gameId){
+        MainActivity.userMe.setGameId(gameId);
         Intent i = new Intent(getApplicationContext(), OnlineGameActivity.class);
         i.putExtra("game_id", gameId);
         startActivity(i);
@@ -201,22 +201,8 @@ public class OnlineLoginActivity extends AppCompatActivity {
                 tvLoginUser.setText("ID: " + (etUsername.getText().toString()));
 
                 DataBaseOp.playerStatus(etUsername.getText().toString(), true, "");
-                MyInterfaceString interfaceRequestInvitation = new MyInterfaceString() {
-                    @Override
-                    public void apply(String name) {
-                        confirmInvite(name);
-                    }
-                };
-                MyInterfaceString interfaceRequestGameStart = new MyInterfaceString() {
-                    @Override
-                    public void apply(String name) {
-                        MainActivity.userMe.setGameId(name);
-                        startGame(name);
-                    }
-                };
-                DataBaseOp.onlinePlayerStatusUpd(MainActivity.userMe.getUsername(),
-                        interfaceRequestInvitation,
-                        interfaceRequestGameStart);
+                DataBaseOp.onlineUserChanges();
+                DataBaseOp.onlinePlayerStatusUpd(MainActivity.userMe.getUsername());
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -252,11 +238,4 @@ public class OnlineLoginActivity extends AppCompatActivity {
             DataBaseOp.playerStatus(MainActivity.userMe.getUsername(), false, "");
     }
 
-}
-
-interface MyInterfaceString {
-    void apply(String name);
-}
-interface MyInterfaceDataSnapshot {
-    void apply(DataSnapshot dataSnapshot);
 }

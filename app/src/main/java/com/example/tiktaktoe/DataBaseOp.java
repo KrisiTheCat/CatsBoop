@@ -14,9 +14,21 @@ import java.util.Objects;
 
 public class DataBaseOp {
 
-
     private static FirebaseDatabase database = FirebaseDatabase.getInstance("https://tik-tak-toe-7f9c3-default-rtdb.firebaseio.com/");
     private static DatabaseReference myRef = database.getReference();
+
+    private static OnlineGameActivity gameActivity;
+    public static void setGameActivity(OnlineGameActivity gameActivity1){
+        gameActivity = gameActivity1;
+    }
+    private static OnlineLoginActivity loginActivity;
+    public static void setLoginActivity(OnlineLoginActivity loginActivity1){
+        loginActivity = loginActivity1;
+    }
+    private static WinActivity winActivity;
+    public static void setWinActivity(WinActivity winActivity1){
+        winActivity = winActivity1;
+    }
 
     public static void playerStatus(String playerName, boolean status, String waiting){
         if(status){
@@ -47,11 +59,11 @@ public class DataBaseOp {
         }
     }
 
-    public static void onlineUserChanges(MyInterfaceDataSnapshot func) {
+    public static void onlineUserChanges() {
         myRef.child("online").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                func.apply(snapshot);
+                loginActivity.userChanges(snapshot);
             }
 
             @Override
@@ -61,18 +73,18 @@ public class DataBaseOp {
         });
     }
 
-    public static void onlinePlayerStatusUpd(String playerName, MyInterfaceString recieveReq, MyInterfaceString startGame){
+    public static void onlinePlayerStatusUpd(String playerName){
 
         myRef.child("online").child(playerName+"").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.hasChildren()) {
                     for (DataSnapshot child : snapshot.getChildren()) {
-                        recieveReq.apply(child.getValue().toString());
+                        loginActivity.confirmInvite(child.getValue().toString());
                     }
                 }
                 else if(!snapshot.getValue().toString().equals("open") && snapshot.getValue().toString().charAt(0) != '_'){
-                    startGame.apply(snapshot.getValue().toString());
+                    loginActivity.startGame(snapshot.getValue().toString());
                     //myRef.child("online").child(playerName+"").removeEventListener(this);
                 }
             }
@@ -108,12 +120,12 @@ public class DataBaseOp {
         myRef.child("games").child(gameId).removeValue();
     }
 
-    public static void gameUpdates(String gameId, MyInterfaceDataSnapshot func){
+    public static void gameUpdates(String gameId){
         myRef.child("games").child(gameId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.getValue()!=null) {
-                    func.apply(snapshot);
+                    gameActivity.gameUpdate(snapshot);
                 }
                 else {
                     myRef.child("games").child(gameId).removeEventListener(this);
@@ -125,13 +137,12 @@ public class DataBaseOp {
             }
         });
     }
-    public static void getGameInfo(String gameId, MyInterfaceDataSnapshot func){
+    public static void getGameInfo(String gameId){
         myRef.child("games").child(gameId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("krisi","123 in DataOP");
                 if(snapshot.getValue()!=null) {
-                    func.apply(snapshot);
+                    winActivity.becomeGameInfo(snapshot);
                 }
                 else {
                     myRef.child("games").child(gameId).removeEventListener(this);
