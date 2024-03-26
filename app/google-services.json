@@ -27,11 +27,6 @@
           "client_type": 3
         }
       ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBfWXKdlCS7HrmqP53HVk30nCAqwbou038"
-        }
-      ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [

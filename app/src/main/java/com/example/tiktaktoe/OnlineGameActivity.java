@@ -116,17 +116,17 @@ public class OnlineGameActivity extends AppCompatActivity {
                         toast.show();
                     }
                     else {
-//                        final View view1 = findViewById(R.id.iv_pulls10);
-//                        final View view2 = findViewById(R.id.ivLight);
-//                        int test1[] = new int[2];
-//                        view1.getLocationOnScreen(test1);
-//                        float x = test1[0];
-//                        float y = test1[1];
-//
-//                        view2.setX(x);
-//                        view2.setY(y);
-//                        Log.d("krisi", "x: " + x);
-//                        Log.d("krisi", "y: " + y);
+                        final View view1 = findViewById(R.id.iv_pulls10);
+                        final View view2 = findViewById(R.id.ivLight);
+                        int test1[] = new int[2];
+                        view1.getLocationOnScreen(test1);
+                        float x = test1[0];
+                        float y = test1[1];
+
+                        view2.setX(x);
+                        view2.setY(y);
+                        Log.d("krisi", "x: " + x);
+                        Log.d("krisi", "y: " + y);
                     }
 
                 }
